@@ -2,7 +2,7 @@ import express from "express";
 
 import usersRouter from "./routes/users";
 import pizzaRouter from "./routes/pizzas";
-import filmsRouter from "./routes/films"
+import filmsRouter from "./routes/films";
 
 
 
@@ -13,7 +13,6 @@ app.use(express.urlencoded({ extended: false }));
 
 let getCounter = 0;
 
-// Middleware global
 app.use((req, _res, next) => {
   if (req.method === "GET") {
     getCounter++;
@@ -24,7 +23,7 @@ app.use((req, _res, next) => {
 
 app.use("/users", usersRouter);
 app.use("/pizzas", pizzaRouter);
-app.use("/films",filmsRouter)
+app.use("/films",filmsRouter);
 
 
 
