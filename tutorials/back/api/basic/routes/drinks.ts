@@ -55,13 +55,13 @@ const drinks: Drink[] = [
 const router = Router();
 
 router.get("/",(req,res) => {
-if (!req.query["budget-max"]) {
+if (!req.query["budget-max"]) {  // on regarde si la query n'est pas falsey
     // Cannot call req.query.budget-max as "-" is an operator
-    return res.json(drinks);
+    return res.json(drinks);  // si elle est vide on retourne la list car c'est un get all
   }
-  const budgetMax = Number(req.query["budget-max"]);
-  const filteredDrinks = drinks.filter((drink) => {
-    return drink.price <= budgetMax;
+  const budgetMax = Number(req.query["budget-max"]); //On va récupperé le budget max en convertissat le parametre dans la querry en Number
+  const filteredDrinks = drinks.filter((drink) => { // içi le .filter va regarder dans la liste de drinks ou le prix est <= au budget max
+    return drink.price <= budgetMax;                // ((drink) => { ce qui suit met la condition
   });
 
   return res.json(filteredDrinks);
@@ -93,9 +93,9 @@ router.post("/", (req, res) => {
     typeof body.image !== "string" ||
     typeof body.volume !== "number" ||
     typeof body.price !== "number" ||
-    !body.title.trim() ||
+    !body.title.trim() ||  //.trim vérifie ci il y'a que des espaces
     !body.image.trim() ||
-    body.volume <= 0 ||
+    body.volume <= 0 ||  // volume négatif impossible
     body.price <= 0
   ) {
     return res.sendStatus(400);
@@ -104,8 +104,9 @@ router.post("/", (req, res) => {
   const { title, image, volume, price } = body as NewDrink;
 
   const nextId =
-    drinks.reduce((maxId, drink) => (drink.id > maxId ? drink.id : maxId), 0) +
-    1;
+    drinks.reduce((maxId, drink) => (drink.id > maxId ? drink.id : maxId), 0) +  // .reduce pertemt de réduire un list à un seule nombre
+    1;                                                                           // elle prend 2 parametres 1er element de comparasion et 2ieme element courant
+     // ? veut dire si true et : veut dire si c'est faux, c'est un if else et 0 à la fin initie une valeu sûre                                                                           
 
   const newDrink: Drink = {
     id: nextId,
