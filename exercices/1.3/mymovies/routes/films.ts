@@ -38,7 +38,18 @@ router.get("/", (_req, res) => {
   return res.json(films);
 });
 
+router.get("/:id", (req, res) => {
+  const id = Number(req.params.id);
 
+  const film = films.find((film) => film.id === id);
+
+  if(!film) {
+    return res.status(404);
+  }
+
+  return res.json(film);
+  
+});
 
 
 export default router;
