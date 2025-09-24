@@ -5,19 +5,19 @@ GET {{baseUrl}}/films
 GET {{baseUrl}}/films/1
 
 
-### Read all films 
+### Read all films with filter minimum duration
 GET {{baseUrl}}/films/?minimum-duration=200
 
 
 ###
 
-### Récupérer un film dont le titre commence par "In"
+### Récupérer titre commence par "In"
 GET http://localhost:3000/films/title/In
 Content-Type: application/json
 
 ###
 
-### Récupérer un film dont le titre commence par "T"
+### Récupérer titre commence par "T"
 GET http://localhost:3000/films/title/T
 Content-Type: application/json
 

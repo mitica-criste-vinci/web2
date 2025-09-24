@@ -138,7 +138,6 @@ router.get("/", (req,res) => {
 router.get("/title/:prefix", (req, res) => {
   const prefix = req.params.prefix.toLowerCase();
 
-
   const results = films.filter((film) =>
     film.title.toLowerCase().startsWith(prefix)
   );
