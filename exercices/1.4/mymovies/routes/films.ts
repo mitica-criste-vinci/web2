@@ -137,11 +137,36 @@ router.get("/", (req,res) => {
 
 router.get("/title/:prefix", (req, res) => {
   const prefix = req.params.prefix.toLowerCase();
+
+
   const results = films.filter((film) =>
     film.title.toLowerCase().startsWith(prefix)
   );
   return res.json(results);
 });
+
+// sort (default asc)
+router.get("/sort/title", (_req, res) => {
+  const sorted = films.sort((a, b) => {
+    if (a.title < b.title) return -1;
+    if (a.title > b.title) return 1;
+    return 0;
+  });
+  return res.json(sorted);
+});
+
+
+
+// sort desc
+router.get("/sort/title/desc", (_req, res) => {
+  const sorted = films.sort((a, b) => {
+    if (a.title > b.title) return -1;
+    if (a.title < b.title) return 1;
+    return 0;
+  });
+  return res.json(sorted);
+});
+
 
 
 

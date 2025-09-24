@@ -23,3 +23,7 @@ Content-Type: application/json
 
 
 
+### Sort (Default Asc)
+GET http://localhost:3000/films/sort/title
+Content-Type: application/json
+
