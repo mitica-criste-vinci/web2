@@ -52,4 +52,68 @@ router.get("/:id", (req, res) => {
 });
 
 
+router.get("/", (req,res) => {
+
+  if (!req.query["minimum-duration"]){
+    return res.json(films);
+  }
+
+  const duration = Number(req.query["minimum-duration"]);
+
+  if (duration<=0){
+    return res.json({ error: "Wrong minimum duration" });
+  }
+
+  const filtredFilms = films.filter((film) => {
+    return film.duration <= duration;
+  });
+
+  return res.json(filtredFilms);
+
+});
+
+
+router.post("/",(req,res)=>{
+
+  const body: unknown = req.body;
+
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !("title" in body) ||
+    !("director" in body) ||
+    !("duration" in body) ||
+    typeof body.title !== "string" ||
+    typeof body.director !== "string" ||
+    typeof body.duration !== "number" ||
+    !body.title.trim() ||
+    !body.director.trim() ||
+    body.duration <= 0
+  ) {
+    return res.sendStatus(400);
+  }
+
+
+  const { title,director, duration} = body as Film;
+  const { budget, description, imageUrl } = body as Film;
+
+
+  const nextId = films.reduce((maxId,film) => (film.id>maxId ? film.id : maxId), 0) + 1;
+
+const film : Film = {
+  id:nextId,
+  title,
+  director,
+  duration,
+  budget,
+  description,
+  imageUrl
+};
+films.push(film);
+
+return res.json(film);
+});
+
+
+
 export default router;

@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:3000
+GET {{baseUrl}}/films
+
+### Read a single film
+GET {{baseUrl}}/films/1
+
+
+### Read all films 
+GET {{baseUrl}}/films/?minimum-duration=200
+
+
+
