@@ -121,4 +121,19 @@ router.post("/", (req, res) => {
 });
 
 
+
+router.delete("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = drinks.findIndex((drink) => drink.id === id);
+  if (index === -1) {
+    return res.sendStatus(404);
+  }
+  const deletedElements = drinks.splice(index, 1); // splice() returns an array of the deleted elements
+                                                   // ici .splice renvoie une arrayList
+                                                   // index nous dis que on veux supprimer à partir de la
+                                                   // et 1 veut dire le nombre de suppression que l'on veux faire
+  return res.json(deletedElements[0]);             // on renvois le premier éléments car il n'y a que lui dans la liste
+});
+
+
 export default router;

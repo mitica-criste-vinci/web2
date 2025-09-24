@@ -124,7 +124,7 @@ router.get("/", (req,res) => {
   const duration = Number(req.query["minimum-duration"]);
 
   if (duration<=0){
-    return res.json({ error: "Wrong minimum duration" });
+    return res.sendStatus(400);
   }
 
   const filtredFilms = films.filter((film) => {
@@ -136,7 +136,9 @@ router.get("/", (req,res) => {
 });
 
 router.get("/title/:prefix", (req, res) => {
+
   const prefix = req.params.prefix.toLowerCase();
+  
 
   const results = films.filter((film) =>
     film.title.toLowerCase().startsWith(prefix)
