@@ -1,0 +1,54 @@
+@baseUrl = http://localhost:3000
+GET {{baseUrl}}/films
+
+### Read a single film
+GET {{baseUrl}}/films/1
+
+
+### Read all films with filter minimum duration
+GET {{baseUrl}}/films/?minimum-duration=200
+
+
+###
+
+### Récupérer titre commence par "In"
+GET http://localhost:3000/films/title/In
+Content-Type: application/json
+
+###
+
+### Récupérer titre commence par "T"
+GET http://localhost:3000/films/title/T
+Content-Type: application/json
+
+
+
+### Sort (Default Asc)
+GET http://localhost:3000/films/sort/title
+Content-Type: application/json
+
+
+###
+POST {{baseUrl}}/films
+Content-Type: application/json
+
+{
+    "title":"Virgin Tonic",
+    "director": "Moi",
+    "duration": 120
+}
+
+###
+DELETE http://localhost:3000/films/4
+
+
+
+### Update the film identified by 5
+PATCH {{baseUrl}}/films/5
+Content-Type: application/json
+
+{
+    "title":"Roh Roh"
+}
+
+
