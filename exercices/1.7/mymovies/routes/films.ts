@@ -1,7 +1,16 @@
 import { Router } from "express";
 import { Film } from "../types";
+import { parse, serialize } from "../utils/json";
+import path from "path";
 
-const films: Film[] = [
+
+const jsonDbPath = path.join(__dirname, "/../data/films.json");
+
+
+
+const defaultFilm: Film[] = [
+
+  
   {
     id: 1,
     title: "Inception",
@@ -33,15 +42,17 @@ const films: Film[] = [
 
 const router = Router();
 
+
 // GET /films → Lire toutes les ressources
 router.get("/", (_req, res) => {
+const films = parse(jsonDbPath,defaultFilm);
   return res.json(films);
 });
 
 router.get("/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  const film = films.find((film) => film.id === id);
+  const film = defaultFilm.find((film) => film.id === id);
 
   if(!film) {
     return res.status(404);
@@ -53,6 +64,8 @@ router.get("/:id", (req, res) => {
 
 
 router.get("/", (req,res) => {
+
+  const films = parse(jsonDbPath,defaultFilm);
 
   if (!req.query["minimum-duration"]){
     return res.json(films);
@@ -97,6 +110,8 @@ router.post("/",(req,res)=>{
   const { title,director, duration} = body as Film;
   const { budget, description, imageUrl } = body as Film;
 
+  const films = parse(jsonDbPath,defaultFilm);
+
 
   const nextId = films.reduce((maxId,film) => (film.id>maxId ? film.id : maxId), 0) + 1;
 
@@ -109,7 +124,9 @@ const film : Film = {
   description,
   imageUrl
 };
+
 films.push(film);
+serialize(jsonDbPath, films);
 
 return res.json(film);
 });
@@ -118,7 +135,7 @@ return res.json(film);
 router.get("/", (req,res) => {
 
   if (!req.query["minimum-duration"]){
-    return res.json(films);
+    return res.json(defaultFilm);
   }
 
   const duration = Number(req.query["minimum-duration"]);
@@ -127,7 +144,7 @@ router.get("/", (req,res) => {
     return res.json({ error: "Wrong minimum duration" });
   }
 
-  const filtredFilms = films.filter((film) => {
+  const filtredFilms = defaultFilm.filter((film) => {
     return film.duration <= duration;
   });
 
@@ -138,7 +155,7 @@ router.get("/", (req,res) => {
 router.get("/title/:prefix", (req, res) => {
   const prefix = req.params.prefix.toLowerCase();
 
-  const results = films.filter((film) =>
+  const results = defaultFilm.filter((film) =>
     film.title.toLowerCase().startsWith(prefix)
   );
   return res.json(results);
@@ -146,7 +163,7 @@ router.get("/title/:prefix", (req, res) => {
 
 // sort (default asc)
 router.get("/sort/title", (_req, res) => {
-  const sorted = films.sort((a, b) => {
+  const sorted = defaultFilm.sort((a, b) => {
     if (a.title < b.title) return -1;
     if (a.title > b.title) return 1;
     return 0;
@@ -158,7 +175,7 @@ router.get("/sort/title", (_req, res) => {
 
 // sort desc
 router.get("/sort/title/desc", (_req, res) => {
-  const sorted = films.sort((a, b) => {
+  const sorted = defaultFilm.sort((a, b) => {
     if (a.title > b.title) return -1;
     if (a.title < b.title) return 1;
     return 0;
@@ -170,7 +187,11 @@ router.get("/sort/title/desc", (_req, res) => {
 // delete
 
 router.delete("/:id",(req,res) => {
+
   const id = Number(req.params.id);
+
+  const films = parse(jsonDbPath,defaultFilm);
+
   const index = films.findIndex((film) => film.id === id);
 
   if (index === - 1) {
@@ -178,6 +199,7 @@ router.delete("/:id",(req,res) => {
   }
 
   const deletedElements = films.splice(index,1);
+  serialize(jsonDbPath,films);
 
   return res.send(deletedElements[0]);
 });
@@ -188,6 +210,8 @@ router.delete("/:id",(req,res) => {
 router.patch("/:id",(req,res) => {
 
   const id = Number(req.params.id);
+
+  const films = parse(jsonDbPath,defaultFilm);
 
   const film = films.find((film) => film.id === id);
 
@@ -247,6 +271,8 @@ router.patch("/:id",(req,res) => {
   }
 
 
+  serialize(jsonDbPath,films);
+
   return res.json(film);
 });
 
@@ -257,6 +283,8 @@ router.patch("/:id",(req,res) => {
 router.put("/:id",(req,res) => {
 
   const id = Number(req.params.id);
+
+  const films = parse(jsonDbPath,defaultFilm);
 
   let film = films.find((film) => film.id === id);
 
@@ -303,12 +331,13 @@ router.put("/:id",(req,res) => {
   } else {
 
     film = { id, title, director, duration, budget, description, imageUrl };
-    films.push(film);
+    defaultFilm.push(film);
   }
 
+  serialize(jsonDbPath,films);
   return res.json(film);
+  
 });
-
 
 
 export default router;
