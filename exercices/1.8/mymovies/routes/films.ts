@@ -1,7 +1,14 @@
 import { Router } from "express";
-import { Film } from "../types";
+import { Film, NewFilm } from "../types";
 import { parse, serialize } from "../utils/json";
 import path from "path";
+import {
+  createdFilm,
+  deleteOneFilm,
+  readAllFilms,
+  readOneFilm,
+  uptadeOneFilm
+} from "../services/films";
 
 
 const jsonDbPath = path.join(__dirname, "/../data/films.json");
@@ -52,7 +59,7 @@ const films = parse(jsonDbPath,defaultFilm);
 router.get("/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  const film = defaultFilm.find((film) => film.id === id);
+  const film = readOneFilm(id);
 
   if(!film) {
     return res.status(404);
@@ -65,23 +72,17 @@ router.get("/:id", (req, res) => {
 
 router.get("/", (req,res) => {
 
-  const films = parse(jsonDbPath,defaultFilm);
-
-  if (!req.query["minimum-duration"]){
-    return res.json(films);
-  }
+  
 
   const duration = Number(req.query["minimum-duration"]);
+
+  const films = readAllFilms(duration);
 
   if (duration<=0){
     return res.sendStatus(400);
   }
 
-  const filtredFilms = films.filter((film) => {
-    return film.duration <= duration;
-  });
-
-  return res.json(filtredFilms);
+  return res.json(films);
 
 });
 
@@ -107,28 +108,12 @@ router.post("/",(req,res)=>{
   }
 
 
-  const { title,director, duration} = body as Film;
-  const { budget, description, imageUrl } = body as Film;
-
-  const films = parse(jsonDbPath,defaultFilm);
+  const { title,director, duration, budget, description, imageUrl} = body as Film;
 
 
-  const nextId = films.reduce((maxId,film) => (film.id>maxId ? film.id : maxId), 0) + 1;
+  const newDrink = createdFilm( { title,director, duration, budget, description, imageUrl});
 
-const film : Film = {
-  id:nextId,
-  title,
-  director,
-  duration,
-  budget,
-  description,
-  imageUrl
-};
-
-films.push(film);
-serialize(jsonDbPath, films);
-
-return res.json(film);
+  return res.json(newDrink);
 });
 
 
@@ -190,18 +175,14 @@ router.delete("/:id",(req,res) => {
 
   const id = Number(req.params.id);
 
-  const films = parse(jsonDbPath,defaultFilm);
+  const deletedFilm = deleteOneFilm(id);
 
-  const index = films.findIndex((film) => film.id === id);
 
-  if (index === - 1) {
-    return res.status(404);
+  if (!deletedFilm){
+    return res.sendStatus(404);
   }
 
-  const deletedElements = films.splice(index,1);
-  serialize(jsonDbPath,films);
-
-  return res.send(deletedElements[0]);
+  return res.json(deletedFilm);
 });
 
 
@@ -210,14 +191,6 @@ router.delete("/:id",(req,res) => {
 router.patch("/:id",(req,res) => {
 
   const id = Number(req.params.id);
-
-  const films = parse(jsonDbPath,defaultFilm);
-
-  const film = films.find((film) => film.id === id);
-
-  if(!film){
-    return res.sendStatus(404);
-  }
 
   const body : unknown = req.body;
 
@@ -246,98 +219,48 @@ router.patch("/:id",(req,res) => {
 
   const {title, director, duration, budget, description, imageUrl} : Partial<Film> = body;
 
-  if(title){
-    film.title = title;
+  const updatedFilm = uptadeOneFilm(id,{title, director, duration, budget, description, imageUrl});  
+
+
+  if(!updatedFilm){
+    return res.sendStatus(404);
   }
 
-  if(director){
-    film.director = director;
-  }
-
-  if(duration){
-    film.duration = duration;
-  }
-
-  if(budget){
-    film.budget=budget;
-  }
-
-  if(description){
-    film.description= description;
-  }
-
-  if(imageUrl){
-    film.imageUrl= imageUrl;
-  }
-
-
-  serialize(jsonDbPath,films);
-
-  return res.json(film);
+  return res.json(updatedFilm);
 });
 
 
 
 
 
-router.put("/:id",(req,res) => {
+//*
 
-  const id = Number(req.params.id);
-
-  const films = parse(jsonDbPath,defaultFilm);
-
-  let film = films.find((film) => film.id === id);
-
-  if(!film){
-    return res.sendStatus(404);
-  }
-
-  const body : unknown = req.body;
+router.put("/:id", (req, res) => {
+  //const id = Number(req.params.id);
+  const body: unknown = req.body;
 
   if (
     !body ||
     typeof body !== "object" ||
-    ("title" in body &&
-      (typeof body.title !== "string" || !body.title.trim())) ||
-    ("director" in body &&
-      (typeof body.director !== "string" || !body.director.trim())) ||
-    ("duration" in body &&
-      (typeof body.duration !== "number" || body.duration <= 0)) ||
-      "budget" in body &&
-    (typeof body.budget !== "number" || body.budget <= 0) ||
-    ("description" in body &&
-      (typeof body.description !== "string" || !body.description.trim())) ||
-    ("imageUrl" in body &&
-      (typeof body.imageUrl !== "string" || !body.imageUrl.trim())) 
-
-  )
-
-   {
+    !("title" in body && typeof body.title === "string" && body.title.trim()) ||
+    !("director" in body && typeof body.director === "string" && body.director.trim()) ||
+    !("duration" in body && typeof body.duration === "number" && body.duration > 0) ||
+    !("budget" in body && typeof body.budget === "number" && body.budget > 0) ||
+    !("description" in body && typeof body.description === "string" && body.description.trim()) ||
+    !("imageUrl" in body && typeof body.imageUrl === "string" && body.imageUrl.trim())
+  ) {
     return res.sendStatus(400);
   }
 
+  //const { title, director, duration, budget, description, imageUrl } = body ;
 
-  const {title, director, duration, budget, description, imageUrl} : Film = body as Film;
+  //const updatedFilm = updateOneFilm(id, { title, director, duration, budget, description, imageUrl });
 
-  if(film){
+  //if (!updatedFilm) return res.sendStatus(404);
 
-    film.title = title;
-    film.director = director;
-    film.duration = duration;
-
-    if (budget !== undefined) film.budget = budget;
-    if (description !== undefined) film.description = description;
-    if (imageUrl !== undefined) film.imageUrl = imageUrl;
-  } else {
-
-    film = { id, title, director, duration, budget, description, imageUrl };
-    defaultFilm.push(film);
-  }
-
-  serialize(jsonDbPath,films);
-  return res.json(film);
-  
+  //return res.json(updatedFilm);
 });
+//*
 
 
 export default router;
