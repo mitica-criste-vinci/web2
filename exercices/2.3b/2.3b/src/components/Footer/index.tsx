@@ -1,9 +1,7 @@
-type FooterProps = {
-  text: string;
-};
+import "./Footer.css";
 
-const Footer = ({ text }: FooterProps) => {
-  return <footer>{text}</footer>;
+const Footer = () => {
+  return <footer className="footer">© 2023 My App</footer>;
 };
 
 export default Footer;

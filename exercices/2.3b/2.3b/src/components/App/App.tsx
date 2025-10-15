@@ -13,10 +13,8 @@ function App() {
   return (
     <div className="page">
       <Header title="Welcome to My App"/>
-
       <UserCard />
-    
-      <Footer text={"© 2023 My App"}  />
+      <Footer/>
     </div>
   );
 }
