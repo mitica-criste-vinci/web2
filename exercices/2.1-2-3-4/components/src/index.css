@@ -28,3 +28,9 @@ footer img {
 footer h1 {
   color: white;
 }
+
+.header-logo {
+  max-height: 250px;   /* hauteur maximale */
+  width: auto;        /* largeur automatique pour garder les proportions */
+}
+
