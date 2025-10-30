@@ -12,11 +12,11 @@ const MovieItem = ({ title, director, description }: MovieItemProps) => {
   return (
     <div
       className="movie-item p-2 border rounded mb-2 cursor-pointer hover:bg-gray-100"
-      onClick={() => setShowDescription(!showDescription)}
+       onClick={() => setShowDescription(!showDescription)}
     >
       <h3>{title}</h3>
       <h3> Directed by: {director}</h3>
-      {showDescription && <p className="mt-1 text-gray-800">{description}</p>}  
+      {showDescription && <p>{description}</p>}  
     </div> // si showDescription est vrai alors on affiche sinon non
   );
 };
