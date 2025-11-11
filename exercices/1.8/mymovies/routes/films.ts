@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { Film, NewFilm } from "../types";
-import { parse, serialize } from "../utils/json";
+import { Film } from "../types";
+import { parse } from "../utils/json";
 import path from "path";
 import {
   createdFilm,
