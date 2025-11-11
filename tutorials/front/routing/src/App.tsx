@@ -1,35 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Link, Outlet, useMatch, useNavigate } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+const NavBar = () => {
+  const navigate = useNavigate();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <nav>
+      <button onClick={() => navigate("/")}>Home</button>
+      <button onClick={() => navigate("/about")}>About</button>
+      <button onClick={() => navigate("/contact")}> Contact</button>
+    </nav>
+  );
+};
+
+const HomePage = () => <p>Home Page</p>;
+const AboutPage = () => (
+    <div>
+      <h1>About Page</h1>
+      <h2>Authors:</h2>
+      {users.map((user) => (
+        <Link key={user.id} to={`/users/${user.id}`} style={{ display: "block" }}>
+          {user.name}
+        </Link>
+      ))}
+    </div>
+);
+const ContactPage = () => <p>Contact Page</p>;
+
+const users: User[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "123-456-7890",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "jane.smith@example.com",
+    phone: "234-567-8901",
+  },
+  {
+    id: 3,
+    name: "James Brown",
+    email: "james.brown@example.com",
+    phone: "345-678-9012",
+  },
+];
+
+const UserPage = () => {
+  const match = useMatch("/users/:userId"); // si on est pas sur la bonne route match = null, sinon il renvoie des inforamtion, c’est un objet avec des infos sur la correspondance de la route.
+  const userId = match?.params.userId; // grace a match on recupere l'id
+  if (!userId) return <p>User not found</p>;
+
+  const user = users.find((user) => user.id.toString() === userId);
+  if (!user) return <p>User not found</p>;
+
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <p>Email: {user.email}</p>
+      <p>Phone: {user.phone}</p>
+    </div>
+  );
+};
+
+const App = () => (
+  <div>
+    <NavBar />
+    <Outlet /> 
+  </div>
+    // on garde la navbar et outlet est remplacer par la page sur laquelle on clique
+
+);
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
 }
 
-export default App
+export default App;
+export { HomePage, AboutPage, ContactPage, UserPage };
